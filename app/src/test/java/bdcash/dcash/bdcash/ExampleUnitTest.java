@@ -1,4 +1,4 @@
-package dcash.bdcash.dcash;
+package bdcash.dcash.bdcash;
 
 import org.junit.Test;
 
