@@ -1,9 +1,11 @@
 <resources>
     <string name="app_name">Dcash</string>
-    <string name="welcome">Welcome</string>
+    <string name="welcome">Hello</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="drawerOpen">Drawer Open</string>
     <string name="drawerClose">Drawer Close</string>
+    <string name="headerText">আপনার একাউন্ট টি সাসপেন্ড মুক্ত রাখতে বেশি বেশি VPN ব্যবহার করুন</string>
+    <string name="infoText">নিচের ১,৪,৪,৩ বাটন গুলোতে সমানভাবে ক্লিক করে কুইন্স উপার্জন করুন এবং ১ কুইন্স এর বোনাস নিয়মিত নিন।</string>
 </resources>

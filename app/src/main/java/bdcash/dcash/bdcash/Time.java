@@ -7,15 +7,20 @@ public class Time {
     private long end_time;
     private int total_balance;
     private int isTimerRunning;
+    private int clickBalance;
+    private int eachDayEarning;
 
     public Time() {
+
     }
 
-    public Time(long last_time, long end_time, int total_balance, int isTimerRunning) {
+    public Time(long last_time, long end_time, int total_balance, int isTimerRunning, int clickBalance, int eachDayEarning) {
         this.last_time = last_time;
         this.end_time = end_time;
         this.total_balance = total_balance;
         this.isTimerRunning = isTimerRunning;
+        this.clickBalance = clickBalance;
+        this.eachDayEarning = eachDayEarning;
     }
 
     public long getLast_time() {
@@ -48,5 +53,21 @@ public class Time {
 
     public void setIsTimerRunning(int isTimerRunning) {
         this.isTimerRunning = isTimerRunning;
+    }
+
+    public int getClickBalance() {
+        return clickBalance;
+    }
+
+    public void setClickBalance(int clickBalance) {
+        this.clickBalance = clickBalance;
+    }
+
+    public int getEachDayEarning() {
+        return eachDayEarning;
+    }
+
+    public void setEachDayEarning(int eachDayEarning) {
+        this.eachDayEarning = eachDayEarning;
     }
 }

@@ -8,77 +8,6 @@
     android:gravity="center"
     tools:context=".MainActivity">
 
-    <!--<TextView-->
-        <!--android:id="@+id/nowBalance"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_gravity="top|center_horizontal"-->
-        <!--android:text="Balance"/>-->
-
-    <!--<TextView-->
-        <!--android:id="@+id/timerText"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="Please wait"-->
-        <!--app:layout_constraintBottom_toBottomOf="parent"-->
-        <!--app:layout_constraintLeft_toLeftOf="parent"-->
-        <!--app:layout_constraintRight_toRightOf="parent"-->
-        <!--app:layout_constraintTop_toTopOf="parent" />-->
-
-    <!--<LinearLayout-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:orientation="horizontal">-->
-
-        <!--<TextView-->
-            <!--android:id="@+id/txtTimerHour"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:textColor="#ff0000"-->
-            <!--android:text="02"/>-->
-        <!--<TextView-->
-            <!--android:layout_marginRight="5dp"-->
-            <!--android:layout_marginLeft="5dp"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:text=":"/>-->
-        <!--<TextView-->
-            <!--android:id="@+id/txtTimerMinute"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:textColor="#ff0000"-->
-            <!--android:text="00"/>-->
-        <!--<TextView-->
-            <!--android:layout_marginRight="5dp"-->
-            <!--android:layout_marginLeft="5dp"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:text=":"/>-->
-        <!--<TextView-->
-            <!--android:id="@+id/txtTimerSecond"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:textColor="#ff0000"-->
-            <!--android:text="00"/>-->
-
-
-
-    <!--</LinearLayout>-->
-
-
-    <!--<Button-->
-        <!--android:id="@+id/quins5"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="5 Quins"-->
-        <!--android:layout_marginTop="10dp"/>-->
-
-    <!--<Button-->
-        <!--android:id="@+id/quins4"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="4 Quins"-->
-        <!--android:layout_marginTop="10dp"/>-->
 
     <include
         android:id="@+id/myToolbar"
@@ -97,21 +26,21 @@
         </FrameLayout>
 
 
-        <android.support.design.widget.NavigationView
+        <com.rom4ek.arcnavigationview.ArcNavigationView
             android:id="@+id/main_drawer"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="start"
-            app:itemIconTint="@color/white"
-            app:itemTextColor="@color/white"
-            android:background="#FFF"
+            app:itemTextColor="#131212"
+            app:itemIconTint="@color/green"
             app:headerLayout="@layout/nav_header_layout"
             app:itemBackground="@drawable/drawer_item_devider"
             app:menu="@menu/navigation_drawer_menu"
-            app:theme="@style/MyNavigationDrawer" >
+            app:theme="@style/MyNavigationDrawer"
+            app:arc_cropDirection="cropInside"
+            app:arc_width="96dp">
 
-
-        </android.support.design.widget.NavigationView>
+        </com.rom4ek.arcnavigationview.ArcNavigationView>
 
     </android.support.v4.widget.DrawerLayout>
 

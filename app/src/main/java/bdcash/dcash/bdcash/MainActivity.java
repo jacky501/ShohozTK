@@ -3,17 +3,12 @@ package bdcash.dcash.bdcash;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.net.wifi.WifiManager;
-import android.os.CountDownTimer;
-import android.os.Handler;
+import android.net.Uri;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -22,60 +17,42 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.Toolbar;
 
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.reward.RewardItem;
-import com.google.android.gms.ads.reward.RewardedVideoAd;
-import com.google.android.gms.ads.reward.RewardedVideoAdListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.util.Enumeration;
+import java.util.Map;
 
 
 public class MainActivity extends AppCompatActivity{
 
-//    public static String ADMOB_APP_ID = "ca-app-pub-3940256099942544~3347511713";
-//    public static long TIME_IN_MILISECONDS = 100000;
+    TextView profilename,acId,total_balance;
     private static final int MY_PERMISSIONS_REQUEST_READ_PHONE_STATE = 0;
-//    public static String currentAd = "";
-//    private TextView timerText, nowBalance;
-//    private Button quins5,quins4;
-//    private int counter = 0;
-//    private int clickBalance = 0;
-//    private int totalBalance = 0;
-//    private long timeLeftInMilis = TIME_IN_MILISECONDS;
-//    private long mEndIime;
-//    private RewardedVideoAd mRewardedVideoAd;
-//    private CountDownTimer countDownTimer;
-//    private int isTimerRunning = 0;
-//    FirebaseDatabase database;
-//    DatabaseReference myRef;
-//    String unique_id;
     android.support.v7.widget.Toolbar toolbar;
     DrawerLayout drawerLayout;
     NavigationView navigationDrawer;
     public static ActionBarDrawerToggle actionBarDrawerToggle;
     public static int navItemIndex = 0;
 
+    private static final String TAG_DASHBOARD = "dashboard";
     private static final String TAG_HOME = "home";
-    private static String CURRENT_TAG=TAG_HOME;
+    private static final String TAG_WITHDRAW = "withdraw";
+    private static final String TAG_WITHDRAW_HISTORY = "withdraw history";
+    private static final String TAG_REFERRAL = "referral";
+    private static final String TAG_NOTICE = "referral";
+    private static String CURRENT_TAG=TAG_DASHBOARD;
+    View navHeader;
+    String shareText;
+    String fbGroupUrl="https://www.facebook.com/groups/DigitalCashProApp/";
+
+    FirebaseDatabase database;
+    DatabaseReference reference;
 
 
 
@@ -84,20 +61,25 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-//       unique_id = getDeviceUniqueID(MainActivity.this);
-//
-//
-//        // Write a message to the database
-//        database = FirebaseDatabase.getInstance();
-//        myRef = database.getReference("Time").child(unique_id);
-//        myRef.keepSynced(false);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
 
+            requestReadPhoneStatePermission();
+        }
 
+        Constant.UNIQUE_ID = getDeviceUniqueID(MainActivity.this);
+
+        database = FirebaseDatabase.getInstance();
+        reference = database.getReference();
+        reference.keepSynced(true);
 
 
         toolbar = findViewById(R.id.myToolbar);
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationDrawer = findViewById(R.id.main_drawer);
+        navHeader = navigationDrawer.getHeaderView(0);
+        profilename = navHeader.findViewById(R.id.drawer_profile_name);
+        acId = navHeader.findViewById(R.id.drawer_profile_account);
+        total_balance = navHeader.findViewById(R.id.drawer_total_balance);
 
 
         setSupportActionBar(toolbar);
@@ -125,99 +107,39 @@ public class MainActivity extends AppCompatActivity{
 
         if (savedInstanceState == null) {
             navItemIndex = 0;
-            CURRENT_TAG = TAG_HOME;
+            CURRENT_TAG = TAG_DASHBOARD;
             loadHomeFragment();
         }
 
         setUpNavigationView();
 
 
-        // Sample AdMob app ID: ca-app-pub-3940256099942544~3347511713
-//        MobileAds.initialize(this, ADMOB_APP_ID);
-//
-//        mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(this);
-//        mRewardedVideoAd.setRewardedVideoAdListener(this);
-//
-//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-//
-//            requestReadPhoneStatePermission();
-//        }
-//
-//        timerText = findViewById(R.id.timerText);
-//        nowBalance = findViewById(R.id.nowBalance);
-//        quins5 = findViewById(R.id.quins5);
-//        quins4 = findViewById(R.id.quins4);
-//
-//
-//
-//        loadRewardedVideoAd();
-//
-//        quins5.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                counter = counter + 1;
-//                currentAd = "REWARD5";
-//                if (mRewardedVideoAd.isLoaded()) {
-//                    mRewardedVideoAd.show();
-//                }
-//            }
-//        });
-//
-//        quins4.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//                currentAd = "REWARD4";
-//                if (mRewardedVideoAd.isLoaded()) {
-//                    mRewardedVideoAd.show();
-//                }
-//            }
-//        });
-//
-//
-//        Toast.makeText(this, getDeviceUniqueID(this), Toast.LENGTH_SHORT).show();
-//        myRef.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                Time time = dataSnapshot.getValue(Time.class);
-//
-//
-//                totalBalance = time.getTotal_balance();
-//                nowBalance.setText(String.valueOf(totalBalance));
-//
-//                timeLeftInMilis = time.getLast_time();
-//                isTimerRunning =time.getIsTimerRunning();
-//
-//
-//                if (isTimerRunning==1) {
-//                    mEndIime = time.getEnd_time();
-//                    timeLeftInMilis = mEndIime-System.currentTimeMillis();
-//
-//                    if (timeLeftInMilis<0)
-//                    {
-//                        myRef.child("last_time").setValue(TIME_IN_MILISECONDS);
-//                        myRef.child("end_time").setValue(0);
-//                        myRef.child("total_balance").setValue(totalBalance);
-//                        myRef.child("isTimerRunning").setValue(0);
-//                        isTimerRunning=0;
-//                        timeLeftInMilis=TIME_IN_MILISECONDS;
-//                        mEndIime=0;
-//                    }else {
-//                        UpdateCountdownText();
-//                        startTimer();
-//                        quins5.setEnabled(false);
-//                        quins4.setEnabled(false);
-//                    }
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        });
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
+                User user = dataSnapshot.child("User")
+                        .child(getDeviceUniqueID(MainActivity.this))
+                        .getValue(User.class);
+                profilename.setText(user.getFull_name());
+                acId.setText(getDeviceUniqueID(MainActivity.this));
+                int totalBalance = dataSnapshot.child("Time").child(getDeviceUniqueID(MainActivity.this)).child("total_balance")
+                        .getValue(Integer.class);
+                total_balance.setText(String.valueOf(totalBalance)+" Quins");
 
+                Map map = (Map) dataSnapshot.child("Share").getValue();
+                shareText = map.get("share_text").toString();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        if (!fbGroupUrl.startsWith("http://") && !fbGroupUrl.startsWith("https://")) {
+            fbGroupUrl = "http://" + fbGroupUrl;
+        }
 
     }
 
@@ -246,10 +168,25 @@ public class MainActivity extends AppCompatActivity{
     private Fragment getHomeFragment() {
         switch (navItemIndex) {
             case 0:
+                DashboardFragment dashboardFragment = new DashboardFragment();
+                return dashboardFragment;
+            case 1:
                 HomeFragment homeFragment = new HomeFragment();
                 return homeFragment;
+            case 2:
+                WithdrawFragment withdrawFragment = new WithdrawFragment();
+                return withdrawFragment;
+            case 3:
+                WithdrawHistoryFragment withdrawHistoryFragment = new WithdrawHistoryFragment();
+                return withdrawHistoryFragment;
+            case 4:
+                ReferralFragment referralFragment = new ReferralFragment();
+                return referralFragment;
+            case 5:
+                NoticeFragment noticeFragment = new NoticeFragment();
+                return noticeFragment;
             default:
-                return new HomeFragment();
+                return new DashboardFragment();
         }
     }
     private void setUpNavigationView() {
@@ -261,9 +198,41 @@ public class MainActivity extends AppCompatActivity{
 
                 switch (menuItem.getItemId()) {
                     //Replacing the main content with ContentFragment Which is our Inbox View;
-                    case R.id.home:
+
+                    case R.id.dashboard:
                         navItemIndex = 0;
+                        CURRENT_TAG = TAG_DASHBOARD;
+                        break;
+                    case R.id.home:
+                        navItemIndex = 1;
                         CURRENT_TAG = TAG_HOME;
+                        break;
+                    case R.id.withdraw:
+                        navItemIndex = 2;
+                        CURRENT_TAG = TAG_WITHDRAW;
+                        break;
+                    case R.id.withdrawHistory:
+                        navItemIndex = 3;
+                        CURRENT_TAG = TAG_WITHDRAW_HISTORY;
+                        break;
+                    case R.id.referel:
+                        navItemIndex = 4;
+                        CURRENT_TAG = TAG_REFERRAL;
+                        break;
+                    case R.id.notice:
+                        navItemIndex = 5;
+                        CURRENT_TAG = TAG_NOTICE;
+                        break;
+                    case R.id.share:
+                        Intent sendIntent = new Intent();
+                        sendIntent.setAction(Intent.ACTION_SEND);
+                        sendIntent.putExtra(Intent.EXTRA_TEXT, shareText);
+                        sendIntent.setType("text/plain");
+                        startActivity(sendIntent);
+                        break;
+                    case R.id.facebookGroup:
+                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(fbGroupUrl));
+                        startActivity(browserIntent);
                         break;
 
                     default:
@@ -285,328 +254,12 @@ public class MainActivity extends AppCompatActivity{
     }
 
 
-
-
-//    private void loadRewardedVideoAd() {
-//        mRewardedVideoAd.loadAd("ca-app-pub-3940256099942544/5224354917",
-//                new AdRequest.Builder().build());
-//    }
-//
-//    @Override
-//    public void onRewardedVideoAdLoaded() {
-//
-//
-//    }
-//
-//    @Override
-//    public void onRewardedVideoAdOpened() {
-//
-//    }
-//
-//    @Override
-//    public void onRewardedVideoStarted() {
-//
-//    }
-//
-//    @Override
-//    public void onRewardedVideoAdClosed() {
-//       loadRewardedVideoAd();
-//
-//    }
-//
-//    @Override
-//    public void onRewarded(RewardItem rewardItem) {
-//
-//        switch (currentAd)
-//        {
-//            case ("REWARD5"):
-//
-//
-//                clickBalance = clickBalance + rewardItem.getAmount();
-//                Toast.makeText(this, String.valueOf(rewardItem.getAmount() + "\n"+ rewardItem.getType()
-//                        +"\n"+clickBalance), Toast.LENGTH_SHORT).show();
-//                totalBalance = totalBalance + rewardItem.getAmount();
-//                nowBalance.setText(String.valueOf(totalBalance));
-//
-//                currentAd = "";
-//                break;
-//
-//            case ("REWARD4"):
-//                int amount = rewardItem.getAmount()-1;
-//                Toast.makeText(this,String.valueOf(amount),Toast.LENGTH_LONG).show();
-//
-//                default:
-//                    currentAd="";
-//                    break;
-//
-//
-//
-//        }
-//
-//        if (clickBalance >= 10) {
-//
-//            if (isTimerRunning==0) {
-//                quins5.setEnabled(false);
-//                quins4.setEnabled(false);
-//                isTimerRunning=1;
-//                UpdateCountdownText();
-//                startTimer();
-//            }
-//
-//        }
-//
-//
-//
-//
-//
-//    }
-//
-//    @Override
-//    public void onRewardedVideoAdLeftApplication() {
-//
-//    }
-//
-//    @Override
-//    public void onRewardedVideoAdFailedToLoad(int i) {
-//
-//    }
-//
-//    @Override
-//    public void onRewardedVideoCompleted() {
-//        loadRewardedVideoAd();
-//
-//    }
-
-//    public final void Interval(long time)
-//    {
-//        timeLeftInMilis = time;
-//        if (time>0L)
-//        {
-//            handler = new Handler();
-//            runnable = new Runnable() {
-//                @Override
-//                public void run() {
-//
-//                    timeLeftInMilis -=1L;
-//                    if (timeLeftInMilis>1L)
-//                    {
-//                        StringBuilder sb = new StringBuilder();
-//                        sb.append("please wait ");
-//                        Object[] array = new Object[3];
-//                        array[0]=Long.valueOf(timeLeftInMilis/3600L);
-//                        array[1]=Long.valueOf(timeLeftInMilis%3600L/60L);
-//                        array[2]=Long.valueOf(timeLeftInMilis % 60L);
-//                        timerText.setText(String.format("%02d:%02d:%02d",array)+"time");
-//                        handler.postDelayed(runnable,1000L);
-//                    }
-//                }
-//            };
-//            handler.postDelayed(runnable,1000L);
-//        }
-//    }
-
-//    private void startTimer() {
-//
-//        mEndIime = System.currentTimeMillis()+timeLeftInMilis;
-//
-//        countDownTimer = new CountDownTimer(timeLeftInMilis, 1000) {
-//            @Override
-//            public void onTick(long millisUntilFinished) {
-//
-//                timeLeftInMilis = millisUntilFinished;
-//
-//                UpdateCountdownText();
-//
-//            }
-//
-//            @Override
-//            public void onFinish() {
-//
-//                mEndIime=0;
-//                clickBalance = 0;
-//                isTimerRunning = 0;
-//                quins5.setEnabled(true);
-//                quins4.setEnabled(true);
-//                timeLeftInMilis = TIME_IN_MILISECONDS;
-//                myRef.child("last_time").setValue(TIME_IN_MILISECONDS);
-//                myRef.child("end_time").setValue(0);
-//                myRef.child("total_balance").setValue(totalBalance);
-//                myRef.child("isTimerRunning").setValue(0);
-//            }
-//        };
-//        countDownTimer.start();
-//
-//    }
-//
-//    private void UpdateCountdownText() {
-//
-//        int hours = (int) (timeLeftInMilis / (60 * 60 * 1000)) % 24;
-//        int minutes = (int) (timeLeftInMilis / (60 * 1000) % 60);
-//        int seconds = (int) (timeLeftInMilis / (1000) % 60);
-//
-//
-//        StringBuilder sb = new StringBuilder();
-//        sb.append("please wait ").append(String.valueOf(hours)+":").append(String.valueOf(minutes)+":").append(String.valueOf(seconds));
-//        timerText.setText(sb.toString());
-//
-//
-//    }
-//
-//    @Override
-//    protected void onSaveInstanceState(Bundle outState) {
-//        super.onSaveInstanceState(outState);
-//        outState.putLong("milisLeft", timeLeftInMilis);
-//        outState.putInt("totalbalance", totalBalance);
-//        outState.putInt("isTimerRunning", isTimerRunning);
-//        outState.putLong("endTime",mEndIime);
-//    }
-//
-//    @Override
-//    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-//        super.onRestoreInstanceState(savedInstanceState);
-//
-//        timeLeftInMilis = savedInstanceState.getLong("milisLeft");
-//        isTimerRunning = savedInstanceState.getInt("isTimerRunning");
-//        totalBalance = savedInstanceState.getInt("totalbalance");
-//
-//        nowBalance.setText(String.valueOf(totalBalance));
-//
-//        if (isTimerRunning==1) {
-//            mEndIime = savedInstanceState.getLong("endTime");
-//            timeLeftInMilis = mEndIime-System.currentTimeMillis();
-//            quins5.setEnabled(false);
-//            quins4.setEnabled(false);
-//            UpdateCountdownText();
-//            startTimer();
-//        }
-//    }
-//
-//    @Override
-//    protected void onStop() {
-//        super.onStop();
-//
-//        try {
-////            FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-////            DatabaseReference databaseReference = firebaseDatabase.getReference("Time");
-////
-////            databaseReference.child("user_id").setValue(unique_id);
-////            databaseReference.child("last_time").setValue(timeLeftInMilis);
-////            databaseReference.child("end_time").setValue(mEndIime);
-////            databaseReference.child("total_balance").setValue(totalBalance);
-////            databaseReference.child("isTimerRunning").setValue(isTimerRunning);
-//
-//            Time time = new Time(timeLeftInMilis,mEndIime,totalBalance,isTimerRunning);
-//            myRef.setValue(time);
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//
-//    }
-
-//
-//    @Override
-//    protected void onPause() {
-//        super.onPause();
-//        mRewardedVideoAd.pause(MainActivity.this);
-//    }
-//
-//    @Override
-//    protected void onResume() {
-//        super.onResume();
-//        mRewardedVideoAd.resume(MainActivity.this);
-//    }
-//
-//    @Override
-//    protected void onDestroy() {
-//        super.onDestroy();
-//        mRewardedVideoAd.destroy(MainActivity.this);
-//        finish();
-//    }
-
-
-    public static String getLocalIpAddress() {
-        try {
-            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements(); ) {
-                NetworkInterface intf = en.nextElement();
-                for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements(); ) {
-                    InetAddress inetAddress = enumIpAddr.nextElement();
-                    if (!inetAddress.isLoopbackAddress() && inetAddress instanceof Inet4Address) {
-                        return inetAddress.getHostAddress();
-                    }
-                }
-            }
-        } catch (SocketException ex) {
-            ex.printStackTrace();
-        }
-        return null;
-    }
-
-    @NonNull
-    private String getDeviceIpAddress() {
-        String actualConnectedToNetwork = null;
-        ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (connManager != null) {
-            NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-            if (mWifi.isConnected()) {
-                actualConnectedToNetwork = getWifiIp();
-            }
-        }
-        if (TextUtils.isEmpty(actualConnectedToNetwork)) {
-            actualConnectedToNetwork = getNetworkInterfaceIpAddress();
-        }
-        if (TextUtils.isEmpty(actualConnectedToNetwork)) {
-            actualConnectedToNetwork = "127.0.0.1";
-        }
-        return actualConnectedToNetwork;
-    }
-
-    @Nullable
-    private String getWifiIp() {
-        final WifiManager mWifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        if (mWifiManager != null && mWifiManager.isWifiEnabled()) {
-            int ip = mWifiManager.getConnectionInfo().getIpAddress();
-            return (ip & 0xFF) + "." + ((ip >> 8) & 0xFF) + "." + ((ip >> 16) & 0xFF) + "."
-                    + ((ip >> 24) & 0xFF);
-        }
-        return null;
-    }
-
-
-    @Nullable
-    public String getNetworkInterfaceIpAddress() {
-        try {
-            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements(); ) {
-                NetworkInterface networkInterface = en.nextElement();
-                for (Enumeration<InetAddress> enumIpAddr = networkInterface.getInetAddresses(); enumIpAddr.hasMoreElements(); ) {
-                    InetAddress inetAddress = enumIpAddr.nextElement();
-                    if (!inetAddress.isLoopbackAddress() && inetAddress instanceof Inet4Address) {
-                        String host = inetAddress.getHostAddress();
-                        if (!TextUtils.isEmpty(host)) {
-                            return host;
-                        }
-                    }
-                }
-
-            }
-        } catch (Exception ex) {
-            Log.e("IP Address", "getLocalIpAddress", ex);
-        }
-        return null;
-    }
-
     public String getDeviceUniqueID(Activity activity) {
         String device_unique_id;
         device_unique_id = Settings.Secure.getString(activity.getContentResolver(),
                 Settings.Secure.ANDROID_ID);
         return device_unique_id;
     }
-
-//    public String getIMEI(Activity activity) {
-//            TelephonyManager telephonyManager = (TelephonyManager) activity
-//                    .getSystemService(Context.TELEPHONY_SERVICE);
-//        return telephonyManager.getDeviceId();
-//    }
 
     private void requestReadPhoneStatePermission() {
         if (ActivityCompat.shouldShowRequestPermissionRationale(this,
